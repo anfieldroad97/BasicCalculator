@@ -10,11 +10,32 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
+            buildHeader()
             Spacer()
             buildNumberPad()
         }
         .frame(maxWidth: .infinity)
         .background(Color.black)
+    }
+    
+    @ViewBuilder
+    private func buildHeader() -> some View {
+        HStack {
+            Button {
+                print("Menu tapped")
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.gray)
+                        .frame(width: 36, height: 36)
+                    Image(systemName: "list.bullet")
+                        .foregroundStyle(Color.white)
+                        .frame(width: 32, height: 32)
+                }
+            }
+            Spacer()
+        }
+        .padding()
     }
     
     @ViewBuilder
