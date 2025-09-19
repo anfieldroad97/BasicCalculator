@@ -7,6 +7,74 @@
 
 import SwiftUI
 
+enum ButtonType {
+    case number(Int)
+    case function(Function)
+    
+    enum Function {
+        case add, subtract, multiply, divide, percent, changeSign, floatingPoint, clear, remove, result
+        
+        var display: Display {
+            switch self {
+            case .add:
+                return .systemImage("plus")
+            case .subtract:
+                return .systemImage("minus")
+            case .multiply:
+                return .systemImage("multiply")
+            case .divide:
+                return .systemImage("divide")
+            case .percent:
+                return .systemImage("percent")
+            case .changeSign:
+                return .systemImage("plus.forwardslash.minus")
+            case .floatingPoint:
+                return .text(",")
+            case .clear:
+                return .text("AC")
+            case .remove:
+                return .systemImage("delete.left")
+            case .result:
+                return .systemImage("equal")
+            }
+        }
+        
+        var bgColor: Color {
+            switch self {
+            case .add, .subtract, .multiply, .divide, .result:
+                return .calcOrange
+            case .percent, .remove, .clear:
+                return .calcLightGray
+            case .changeSign, .floatingPoint:
+                return .calcDarkGray
+            }
+        }
+    }
+    
+    var display: Display {
+        switch self {
+        case .number(let number):
+            return .text(String(number))
+        case .function(let function):
+            return function.display
+        }
+    }
+    
+    var bgColor: Color {
+        switch self {
+        case .number:
+            return .calcDarkGray
+        case .function(let function):
+            return function.bgColor
+        }
+    }
+    
+    enum Display {
+        case text(String)
+        case systemImage(String)
+    }
+}
+
 struct ContentView: View {
     @State var upperText: String = "5 + 4"
     @State var lowerText: String = "9"
@@ -67,69 +135,61 @@ struct ContentView: View {
     private func buildNumberPad() -> some View {
         VStack {
             HStack {
-                buildNumberButton(imageName: "delete.left", fillColor: .calcLightGray)
-                buildNumberButton(text: "AC", fillColor: .calcLightGray)
-                buildNumberButton(imageName: "percent", fillColor: .calcLightGray)
-                buildNumberButton(imageName: "divide", fillColor: .calcOrange)
+                buildNumberButton(type: .function(.remove))
+                buildNumberButton(type: .function(.clear))
+                buildNumberButton(type: .function(.percent))
+                buildNumberButton(type: .function(.divide))
             }
             
             HStack {
-                buildNumberButton(text: "7", fillColor: .calcDarkGray)
-                buildNumberButton(text: "8", fillColor: .calcDarkGray)
-                buildNumberButton(text: "9", fillColor: .calcDarkGray)
-                buildNumberButton(imageName: "multiply", fillColor: .calcOrange)
+                buildNumberButton(type: .number(7))
+                buildNumberButton(type: .number(8))
+                buildNumberButton(type: .number(9))
+                buildNumberButton(type: .function(.multiply))
             }
             
             HStack {
-                buildNumberButton(text: "4", fillColor: .calcDarkGray)
-                buildNumberButton(text: "5", fillColor: .calcDarkGray)
-                buildNumberButton(text: "6", fillColor: .calcDarkGray)
-                buildNumberButton(imageName: "minus", fillColor: .calcOrange)
+                buildNumberButton(type: .number(4))
+                buildNumberButton(type: .number(5))
+                buildNumberButton(type: .number(6))
+                buildNumberButton(type: .function(.subtract))
             }
             
             HStack {
-                buildNumberButton(text: "1", fillColor: .calcDarkGray)
-                buildNumberButton(text: "2", fillColor: .calcDarkGray)
-                buildNumberButton(text: "3", fillColor: .calcDarkGray)
-                buildNumberButton(imageName: "plus", fillColor: .calcOrange)
+                buildNumberButton(type: .number(1))
+                buildNumberButton(type: .number(2))
+                buildNumberButton(type: .number(3))
+                buildNumberButton(type: .function(.add))
             }
             
             HStack {
-                buildNumberButton(imageName: "plus.forwardslash.minus", fillColor: .calcDarkGray)
-                buildNumberButton(text: "0", fillColor: .calcDarkGray)
-                buildNumberButton(text: ",", fillColor: .calcDarkGray)
-                buildNumberButton(imageName: "equal", fillColor: .calcOrange)
+                buildNumberButton(type: .function(.changeSign))
+                buildNumberButton(type: .number(0))
+                buildNumberButton(type: .function(.floatingPoint))
+                buildNumberButton(type: .function(.result))
             }
         }
         .padding()
     }
     
     @ViewBuilder
-    private func buildNumberButton(text: String, fillColor: Color) -> some View {
+    private func buildNumberButton(type: ButtonType) -> some View {
         Button {
             print("Something")
         } label: {
             ZStack {
                 Circle()
-                    .fill(fillColor)
-                Text(text)
-                    .foregroundStyle(Color.white)
-                    .font(.largeTitle)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func buildNumberButton(imageName: String, fillColor: Color) -> some View {
-        Button {
-            print("Something")
-        } label: {
-            ZStack {
-                Circle()
-                    .fill(fillColor)
-                Image(systemName: imageName)
-                    .foregroundStyle(Color.white)
-                    .font(.largeTitle)
+                    .fill(type.bgColor)
+                switch type.display {
+                case .text(let value):
+                    Text(value)
+                        .foregroundStyle(Color.white)
+                        .font(.largeTitle)
+                case .systemImage(let value):
+                    Image(systemName: value)
+                        .foregroundStyle(Color.white)
+                        .font(.largeTitle)
+                }
             }
         }
     }
