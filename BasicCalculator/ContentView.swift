@@ -8,13 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var upperText: String = "5 + 4"
+    @State var lowerText: String = "9"
+    
     var body: some View {
         VStack {
             buildHeader()
-            Spacer()
+                .fixedSize(horizontal: false, vertical: true)
+                .layoutPriority(1)
+            buildTextDisplayArea()
+                .frame(maxHeight: .infinity)
             buildNumberPad()
+                .fixedSize(horizontal: false, vertical: true)
+                .layoutPriority(1)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxHeight: .infinity)
         .background(Color.black)
     }
     
@@ -34,6 +42,23 @@ struct ContentView: View {
                 }
             }
             Spacer()
+        }
+        .padding()
+    }
+    
+    @ViewBuilder
+    private func buildTextDisplayArea() -> some View {
+        VStack {
+            Spacer()
+            Text(upperText)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .foregroundStyle(Color.gray)
+                .font(Font.system(size: 24, weight: .semibold))
+            
+            Text(lowerText)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .foregroundStyle(Color.white)
+                .font(Font.system(size: 48, weight: .semibold))
         }
         .padding()
     }
